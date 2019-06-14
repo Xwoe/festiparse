@@ -5,7 +5,7 @@ from log import get_logger
 logger = get_logger(__name__)
 
 TAGS = {'haldern': ["h4", "list-title"],
-        'maifeld': ["figure", "wk-overlay wk-overlay-hover "],
+        'maifeld': ["a", "wk-position-cover wk-position-z-index"],
         'obs': ["h2", "entry-title fusion-post-title"]}
 
 class BandParser():
@@ -30,11 +30,7 @@ class BandParser():
         
         for s in self.samples:
 
-            result_all = s.findAll('img')
-            for item in result_all:
-                if 'alt' in item.attrs.keys():
-                    band = item.attrs['alt']
-
+            band = s.attrs['title']
             band = band.split('(')[0]
             band = band.strip()
             self.bands.append(band)
