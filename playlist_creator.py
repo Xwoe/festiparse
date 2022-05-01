@@ -18,6 +18,7 @@ class PlaylistCreator():
     def __init__(self, username, playlist_name):
         self.username = username
         self.playlist_name = playlist_name
+        self.playlist_tracks = []
         self.playlist_description = ''
         self.client_id = os.environ['SPOTIPY_CLIENT_ID']
         self.client_secret = os.environ['SPOTIPY_CLIENT_SECRET']
@@ -52,8 +53,7 @@ class PlaylistCreator():
         return ''
 
     def get_all_playlist_tracks(self, playlist_id):
-
-        self.playlist_tracks = []
+      
         stepsize = 100
         i = 0
         
@@ -94,8 +94,10 @@ class PlaylistCreator():
         top_tracks = [track['id'] for track in top_tracks['tracks']]
         return top_tracks
 
-    def add_tracks(self, album_tracks):
-        
+    def add_tracks(self, album_tracks, artist):
+        """
+        Create the list of tracks to add, which are not yet in the playlist.
+        """
         
         if self.playlist_tracks:
             add_tracks = [track for track in album_tracks if track not in self.playlist_tracks]
@@ -103,6 +105,7 @@ class PlaylistCreator():
             add_tracks = album_tracks
         if len(add_tracks) > 0:
             self.spotify.user_playlist_add_tracks(self.username, self.playlist_id, add_tracks, position=None)
+            logger.info(f'+++ Tracks added for {artist}')
         
     def update_playlist(self, artists):
         logger.info(f'updating {self.playlist_name}')
@@ -116,4 +119,4 @@ class PlaylistCreator():
                 if not album_tracks:
                     logger.warning(f'/!\ nothing found for {artist}')
                     continue
-            self.add_tracks(album_tracks)
+            self.add_tracks(album_tracks, artist)
